@@ -42,8 +42,12 @@ class CreateWebAuthnTables extends Migration
             $table->timestamps();
             $table->softDeletes(WebAuthnCredential::DELETED_AT);
 
-            $table->primary(['id', 'user_id']);
+            // SQLSTATE[42000]: Syntax error or access violation: 1170 BLOB/TEXT column 'id' used in key specification without a key length
+            // (SQL: alter table `web_authn_credentials` add primary key `web_authn_credentials_id_user_id_primary`(`id`, `user_id`))
+            // $table->primary(['id', 'user_id']);
         });
+
+        \DB::statement(\DB::raw('ALTER TABLE `web_authn_credentials` ADD PRIMARY KEY `id_user_id` (`id`(255), `user_id`);'));
 
         Schema::create('web_authn_recoveries', function (Blueprint $table) {
             $table->string('email')->index();
